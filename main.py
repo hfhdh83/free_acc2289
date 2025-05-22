@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 # Инициализация бота
 bot = Bot(
-    token="7782667817:AAEY8Z3a1gqu6E9Ineu-KyggH17A4p6shgU", #8121913607:AAHGPXwGqcJnufM2kyayIvyJA1plBjp192E
+    token="8121913607:AAHGPXwGqcJnufM2kyayIvyJA1plBjp192E",
     default=DefaultBotProperties(parse_mode=ParseMode.HTML)
 )
 dp = Dispatcher(storage=MemoryStorage())
