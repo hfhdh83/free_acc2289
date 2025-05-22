@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 # Инициализация бота
 bot = Bot(
-    token="8121913607:AAHGPXwGqcJnufM2kyayIvyJA1plBjp192E",
+    token="7782667817:AAEY8Z3a1gqu6E9Ineu-KyggH17A4p6shgU", #8121913607:AAHGPXwGqcJnufM2kyayIvyJA1plBjp192E
     default=DefaultBotProperties(parse_mode=ParseMode.HTML)
 )
 dp = Dispatcher(storage=MemoryStorage())
@@ -1085,7 +1085,6 @@ async def select_replenish_product(callback: types.CallbackQuery, state: FSMCont
         f"{INDENT}Отправьте /cancel для отмены."
     )
 
-# Обработчик ввода аккаунтов для пополнения товара
 @dp.message(AdminStates.waiting_for_replenish_accounts)
 async def process_replenish_accounts(message: types.Message, state: FSMContext):
     if message.text == "/cancel":
@@ -1114,7 +1113,25 @@ async def process_replenish_accounts(message: types.Message, state: FSMContext):
 
     price, default_level = product
 
-    accounts_text = message.text.strip()
+    # Проверяем, отправлен документ или текст
+    if message.document:
+        try:
+            # Скачиваем файл
+            file_info = await bot.get_file(message.document.file_id)
+            downloaded_file = await bot.download_file(file_info.file_path)
+            # Читаем содержимое файла
+            accounts_text = downloaded_file.read().decode('utf-8').strip()
+        except Exception as e:
+            await message.answer(f"{INDENT}Ошибка при чтении файла: {str(e)}")
+            await state.clear()
+            return
+    elif message.text:
+        accounts_text = message.text.strip()
+    else:
+        await message.answer(f"{INDENT}Ошибка: отправьте текстовое сообщение или файл с аккаунтами.")
+        await state.clear()
+        return
+
     if not accounts_text:
         await message.answer(f"{INDENT}Ошибка: отправлен пустой список аккаунтов.")
         await state.clear()
